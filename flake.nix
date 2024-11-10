@@ -71,20 +71,23 @@
           then "/Users/${username}"
           else "/home/${username}";
         rev = inputs.self.rev or inputs.self.dirtyRev or null;
-        fh = inputs.fh.packages.${system}.default;
-        flake-checker = inputs.flake-checker.packages.${system}.default;
-        jelly = inputs.jelly.packages.${system}.default;
-        rustToolchain = with inputs.fenix.packages.${system};
-          combine (with stable; [
+
+        extraPkgs = [
+          inputs.fh.packages.${system}.default
+          inputs.flake-checker.packages.${system}.default
+          inputs.jelly.packages.${system}.default
+
+          # Rust toolchain
+          (with inputs.fenix.packages.${system}; combine (with stable; [
             cargo
             clippy
             rustc
             rustfmt
             rust-src
-          ]);
-
-        # Packages from Nixpkgs unstable
-        gleam = inputs.nixpkgs-unstable.legacyPackages.${system}.gleam;
+          ]))
+        ]
+        # Nixpkgs unstable
+        ++ (with inputs.nixpkgs-unstable.legacyPackages.${system}; [ cue gleam hugo ]);
       };
 
       darwinConfigurations."${username}-${system}" = inputs.nix-darwin.lib.darwinSystem {

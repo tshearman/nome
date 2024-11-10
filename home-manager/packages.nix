@@ -54,35 +54,10 @@ let
     Security
   ];
 
-  docsTools =
-    let
-      hugo = pkgs.buildGoModule rec {
-        pname = "hugo";
-        version = "0.135.0";
-        src = pkgs.fetchFromGitHub {
-          owner = "gohugoio";
-          repo = "hugo";
-          rev = "refs/tags/v${version}";
-          hash = "sha256-WCWaEVD2HON6feOev9HBfpqBWYIFmfevu6LH0OMtv2Q=";
-        };
-        vendorHash = "sha256-XIFgmT0VyhRrUNfwy85Ac7YIO9fij0KqVmqb/s3IDVg=";
-        doCheck = false;
-        proxyVendor = true;
-        tags = [ "extended" ];
-        subPackages = [ "." ];
-        nativeBuildInputs = with pkgs; [ installShellFiles ];
-        ldflags = [ "-s" "-w" "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=nixpkgs" ];
-      };
-    in
-    [ hugo ];
-
   misc = with pkgs; [
     comma
-    cue
     elixir
     elixir-ls
-    gleam
-    jelly
     lima
     mprocs
     neofetch
@@ -95,8 +70,6 @@ let
   ];
 
   nixTools = with pkgs; [
-    fh
-    flake-checker
     nixfmt-classic
     nixpkgs-fmt
   ];
@@ -107,7 +80,6 @@ let
 
   rustTools = with pkgs; [
     bacon
-    rustToolchain
     cargo-edit
     cargo-machete
     cargo-watch
@@ -139,7 +111,8 @@ let
     materialize
   ];
 in
-basic
+pkgs.extraPkgs
+++ basic
 ++ bin
 ++ buildTools
 ++ databaseTools
@@ -153,4 +126,3 @@ basic
 ++ rustTools
 ++ scripts
 ++ security
-++ docsTools
